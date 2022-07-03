@@ -44,8 +44,8 @@ def main():
         else:
             infected_employees_exists = False
 
-    with open(OUTPUT_DATA_FILE, 'w') as input_data_file:
-        input_data_file.write(' '.join(employees))
+    with open(OUTPUT_DATA_FILE, 'w') as output_data_file:
+        output_data_file.write(' '.join(employees))
 
 
 if __name__ == '__main__':
