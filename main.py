@@ -1,40 +1,51 @@
+import os
+
 INPUT_DATA_FILE = 'input.txt'
 OUTPUT_DATA_FILE = 'output.txt'
 
 
 def main():
-    with open(INPUT_DATA_FILE) as file:
-        input_data = file.read()
+    assert os.path.exists(INPUT_DATA_FILE), f'Create a file "{INPUT_DATA_FILE}" with input data to run the script.'
 
-    input_data = input_data.split('\n')
+    all_employee_meetings = []
+    infected_meetings = set()
+    healthy_employees = set()
 
-    employees = input_data[1].split()
+    with open(INPUT_DATA_FILE) as input_data_file:
+        input_data_file.readline()  # Skip count of employees in input_data_file
+        employees = input_data_file.readline().split()
 
-    meetings = []
-    bad_meetings = set()
+        for employee_id, employee_meetings in enumerate(input_data_file.readlines()):
+            employee_meetings = employee_meetings.split()
+            employee_meetings.pop(0)    # Skip count of meetings in data line
+            employee_meetings = set(employee_meetings)
+            all_employee_meetings.append(employee_meetings)
 
-    for emp_id, emp_meets in enumerate(input_data[2:]):
-        meets = emp_meets.split()
-        count = meets.pop(0)
-        meets = set(meets)
-        meetings.append((count, meets))
+            if employees[employee_id] == '1':
+                infected_meetings |= employee_meetings
+            else:
+                healthy_employees.add(employee_id)
 
-        if employees[emp_id] == '1':
-            bad_meetings |= meets
+    infected_employees_exists = True
+    while infected_employees_exists:
+        employees_to_quarantine = set()
+        for employee_id in healthy_employees:
+            employee_meetings = all_employee_meetings[employee_id]
+            infected_employee_meetings = infected_meetings & employee_meetings
 
-    for emp_id, emp in enumerate(employees):
-        if emp == '1':
-            continue
+            if infected_employee_meetings:
+                first_infected_meeting = min(infected_employee_meetings)
+                infected_meetings |= {meeting for meeting in employee_meetings if meeting >= first_infected_meeting}
+                employees[employee_id] = '1'
+                employees_to_quarantine.add(employee_id)
 
-        count, meets = meetings[emp_id]
+        if employees_to_quarantine:
+            healthy_employees -= employees_to_quarantine
+        else:
+            infected_employees_exists = False
 
-        meets -= bad_meetings
-
-        if len(meets) != int(count):
-            employees[emp_id] = '1'
-
-    with open(OUTPUT_DATA_FILE, 'w') as file:
-        file.write(' '.join(employees))
+    with open(OUTPUT_DATA_FILE, 'w') as input_data_file:
+        input_data_file.write(' '.join(employees))
 
 
 if __name__ == '__main__':
