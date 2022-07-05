@@ -15,7 +15,7 @@ def main():
         input_data_file.readline()  # Skip count of employees in input_data_file
         employees = input_data_file.readline().split()
 
-        for employee_id, employee_meetings in enumerate(input_data_file.readlines()):
+        for employee_id, employee_meetings in enumerate(input_data_file):
             employee_meetings = employee_meetings.split()
             employee_meetings.pop(0)    # Skip count of meetings in data line
             employee_meetings = set(employee_meetings)
